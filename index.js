@@ -71,6 +71,20 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
 	const body = req.body
 
+	if(!body.name || !body.number) {
+		return res.status(400).json({
+			error: "Name and number are required"
+		})
+	}
+
+	const nameExists = persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())
+
+	if(nameExists) {
+		return res.status(400).json({
+			error: "name must be unique"
+		})
+	}
+
 	const person = {
 		...body,
 		id: Math.floor(Math.random() * 100000)
