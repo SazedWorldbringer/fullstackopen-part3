@@ -1,10 +1,12 @@
 const express = require("express")
 const morgan = require("morgan")
 
+morgan.token('data', function(req, res) { return JSON.stringify(req.body) })
+
 const app = express()
 
 app.use(express.json())
-app.use(morgan("tiny"))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 let persons = [
 	{
@@ -74,7 +76,7 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
 	const body = req.body
 
-	if(!body.name || !body.number) {
+	if (!body.name || !body.number) {
 		return res.status(400).json({
 			error: "Name and number are required"
 		})
@@ -82,7 +84,7 @@ app.post('/api/persons', (req, res) => {
 
 	const nameExists = persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())
 
-	if(nameExists) {
+	if (nameExists) {
 		return res.status(400).json({
 			error: "name must be unique"
 		})
